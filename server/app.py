@@ -2,7 +2,7 @@
 
 from flask import Flask, jsonify
 from flask_cors import CORS
-from paint.server.api import api
+from server.api import api
 
 app = Flask(__name__)
 CORS(app)
@@ -13,11 +13,10 @@ app.config.from_mapping(
 app.register_blueprint(api)
 
 
-@app.route("/api/home", methods=['GET'])
+@app.route("/api/home", methods=["GET"])
 def return_home():
-  return jsonify({
-    'message': 'Hello, World!'
-  })
+    return jsonify({"message": "Hello, World!"})
+
 
 if __name__ == "__main__":
-  app.run(debug=True, port=8080)
+    app.run(debug=True, port=8080)

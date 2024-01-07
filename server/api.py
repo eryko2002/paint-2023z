@@ -1,9 +1,29 @@
 from typing import Any
 from flask import Blueprint, session, redirect, url_for, request
-from paint.server.filmy import filmy
-from paint.server.auth import auth
+from server.filmy import lista_filmow
+from server.auth import get_password
 
 api = Blueprint("api", __name__, url_prefix="/api")
+
+# Przykładowa baza danych filmów
+movies = {
+    1: {
+        "id": 1,
+        "title": "Incepcja",
+        "director": "Christopher Nolan",
+        "year": 2010,
+        "description": "Film o podróżowaniu przez sny.",
+    },
+    2: {
+        "id": 2,
+        "title": "Interstellar",
+        "director": "Christopher Nolan",
+        "year": 2014,
+        "description": "Film o podróży kosmicznej.",
+    },
+    # ... inne filmy ...
+}
+
 
 @api.route("/home", methods=["GET"])
 def home() -> Any:
@@ -68,8 +88,7 @@ def seats() -> Any:
 
 @api.route("/buyer-data", methods=["POST"])
 def buyer_data() -> Any:
-    data = {k: request.form.get(k) 
-            for k in ["imię", "nazwisko", "e-mail", "telefon"]}
+    data = {k: request.form.get(k) for k in ["imię", "nazwisko", "e-mail", "telefon"]}
 
     return {
         "success": True,
@@ -115,12 +134,57 @@ def user(id: int) -> Any:
                 "telefon-mail": "...",
             }
         case "POST":
-            data = {k: request.form.get(k) 
-                    for k in ["imię", "nazwisko", "e-mail", "telefon"]}
+            data = {
+                k: request.form.get(k)
+                for k in ["imię", "nazwisko", "e-mail", "telefon"]
+            }
 
 
 @api.route("/filmy", methods=["POST"])
 def filmy() -> Any:
-    data = {k: request.form.get(k) 
-            for k in ["plakat", "tytuł", "typ", "minimalny wiek", "czas trwania", "produkcja", "dostępne godziny seansów"]}
+    data = {
+        k: request.form.get(k)
+        for k in [
+            "plakat",
+            "tytuł",
+            "typ",
+            "minimalny wiek",
+            "czas trwania",
+            "produkcja",
+            "dostępne godziny seansów",
+        ]
+    }
     return {}
+
+
+@api.route("/admin/add_movie", methods=["POST"])
+def add_movie() -> Any:
+    new_movie = request.json  # Załóżmy, że przesyłane są dane w formacie JSON
+    movie_id = max(movies.keys()) + 1
+    new_movie["id"] = movie_id
+    movies[movie_id] = new_movie
+    return {"message": "Film został dodany pomyślnie"}
+
+
+@api.route("/admin/update_movie/<int:id>", methods=["PUT"])
+def update_movie(id: int) -> Any:
+    if id not in movies:
+        return {"message": f"Film o ID {id} nie istnieje"}
+
+    updated_movie = request.json  # Nowe dane filmu
+    movies[id].update(updated_movie)
+    return {"message": f"Informacje o filmie {id} zostały zaktualizowane"}
+
+
+@api.route("/admin/delete_movie/<int:id>", methods=["DELETE"])
+def delete_movie(id: int) -> Any:
+    if id not in movies:
+        return {"message": f"Film o ID {id} nie istnieje"}
+
+    del movies[id]
+    return {"message": f"Film {id} został usunięty"}
+
+
+@api.route("/movies", methods=["GET"])
+def get_movies() -> Any:
+    return {"movies": list(movies.values())}
