@@ -1,32 +1,32 @@
 from typing import Any
-from flask import Blueprint, session, redirect, url_for, request
-from paint.server.filmy import filmy
-from paint.server.auth import auth
+from flask import Blueprint, session, redirect, url_for, request, jsonify
+# from paint.server.filmy import filmy
+# from paint.server.auth import auth
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
 @api.route("/home", methods=["GET"])
 def home() -> Any:
-    return [
+    return jsonify([
         {
-            "plakat": "...",
-            "tytuł": "...",
-            "typ": "...",
-            "minimalny wiek": "...",
-            "czas trwania": "...",
-            "produkcja": "...",
-            "dostępne godziny seansów": "...",
+            "poster": "...",
+            "title": "...",
+            "type": "...",
+            "minimum-age": "...",
+            "duration": "...",
+            "production": "...",
+            "available-showtimes": "...",
         },
         {
-            "plakat": "...",
-            "tytuł": "...",
-            "typ": "...",
-            "minimalny wiek": "...",
-            "czas trwania": "...",
-            "produkcja": "...",
-            "dostępne godziny seansów": "...",
+            "poster": "...",
+            "title": "...",
+            "type": "...",
+            "minimum-age": "...",
+            "duration": "...",
+            "production": "...",
+            "available-showtimes": "...",
         },
-    ]
+    ])
 
 
 @api.route("/repertuar", methods=["GET"])
@@ -36,17 +36,17 @@ def repertuar() -> Any:
 
 @api.route("/cennik", methods=["GET"])
 def cennik() -> Any:
-    return {
-        "ulgowy 2d": 10,
-        "normalny 2d": 10,
-        "ulgowy 3d": 10,
-        "normalny 3d": 10,
-    }
+    return jsonify({
+        "reduced": 10,
+        "normal": 10,
+        "reduced3D": 10,
+        "normal3D": 10,
+    })
 
 
 @api.route("/film/<int:id>", methods=["GET"])
 def film(id: int) -> Any:
-    return {
+    return jsonify({
         "plakat": "...",
         "tytuł": "...",
         "typ": "...",
@@ -54,7 +54,7 @@ def film(id: int) -> Any:
         "czas trwania": "...",
         "produkcja": "...",
         "dostępne godziny seansów": "...",
-    }
+    })
 
 
 @api.route("/seats", methods=["GET", "POST"])
